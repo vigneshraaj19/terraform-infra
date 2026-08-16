@@ -9,16 +9,14 @@ on:
     paths: ["terraform/**"]
 
 permissions:
-  id-token: write # required for OIDC -> AWS
+  id-token: write      # required for OIDC -> AWS
   contents: read
   pull-requests: write # required to comment the plan on PRs
 
 env:
   AWS_REGION: us-east-1
-  TF_VAR_github_org: vigneshraaj19 # match terraform/variables.tf
-  TF_VAR_github_repo: terraform-infra # match terraform/variables.tf
-
-  
+  TF_VAR_github_org: vigneshraaj19
+  TF_VAR_github_repo: terraform-infra
 
 jobs:
   plan:
@@ -29,16 +27,8 @@ jobs:
         working-directory: terraform
     steps:
       - uses: actions/checkout@v4
-      - name: DEBUG - decode OIDC token claims
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const token = await core.getIDToken('sts.amazonaws.com');
-            const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-            console.log(JSON.stringify(payload, null, 2));
 
       - name: Configure AWS credentials via OIDC
-      
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_TERRAFORM_ROLE_ARN }}
@@ -85,14 +75,21 @@ jobs:
   apply:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment:
-      production # optional: add a required-reviewers gate in
-      # repo Settings -> Environments for extra safety
+    environment: production   # optional: add a required-reviewers gate in
+                               # repo Settings -> Environments for extra safety
     defaults:
       run:
         working-directory: terraform
     steps:
       - uses: actions/checkout@v4
+
+      - name: DEBUG - decode OIDC token claims
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken('sts.amazonaws.com');
+            const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+            console.log(JSON.stringify(payload, null, 2));
 
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
