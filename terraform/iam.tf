@@ -45,15 +45,18 @@ resource "aws_iam_role" "github_actions_deploy" {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
-        StringLike = {
-          # Restricts which repo/branch can assume this role.
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}@*/${var.app_github_repo}@*:ref:refs/heads/${var.github_branch}"
-        }
-      }
     }]
   })
 
   tags = local.common_tags
+
+  # Ensures the terraform-role's own IAM-management permissions (granted via
+  # github_actions_terraform_iam below) are in place *before* Terraform CI
+  # tries to modify this role's trust policy. Without this, Terraform may
+  # run both updates in parallel and hit a permissions race (seen in
+  # practice: UpdateAssumeRolePolicy AccessDenied on the first apply after
+  # granting the permission, succeeding only on re-run).
+  depends_on = [aws_iam_role_policy.github_actions_terraform_iam]
 }
 
 # Scoped-down deploy permissions: push to this one ECR repo, and
