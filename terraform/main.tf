@@ -7,7 +7,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-  //asfaf
 
   # Created by terraform-bootstrap/ — run that once first, then fill in
   # the bucket name below (Terraform backend blocks can't use variables).
