@@ -45,6 +45,11 @@ resource "aws_iam_role" "github_actions_deploy" {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
+        StringLike = {
+          # Restricts which repo/branch can assume this role.
+          "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}@*/${var.app_github_repo}@*:ref:refs/heads/${var.github_branch}"
+        }
+      }
     }]
   })
 
