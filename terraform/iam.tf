@@ -170,6 +170,7 @@ resource "aws_iam_role_policy" "github_actions_terraform_iam" {
         "iam:DeleteRole",
         "iam:GetRole",
         "iam:PassRole",
+        "iam:UpdateAssumeRolePolicy",
         "iam:TagRole",
         "iam:UntagRole",
         "iam:AttachRolePolicy",
