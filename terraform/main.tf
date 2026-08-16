@@ -10,7 +10,6 @@ terraform {
 
 
   # Created by terraform-bootstrap/ — run that once first, then fill in
-  # Created by terraform-bootstrap/ — run that once first, then fill in
   # the bucket name below (Terraform backend blocks can't use variables).
   backend "s3" {
     bucket         = "vignesh-terraform-state-2026-us"

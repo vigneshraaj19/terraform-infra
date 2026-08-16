@@ -47,7 +47,7 @@ resource "aws_iam_role" "github_actions_deploy" {
         }
         StringLike = {
           # Restricts which repo/branch can assume this role.
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}/${var.app_github_repo}:ref:refs/heads/${var.github_branch}"
+          "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}@*/${var.app_github_repo}@*:ref:refs/heads/${var.github_branch}"
         }
       }
     }]
@@ -130,7 +130,10 @@ resource "aws_iam_role" "github_actions_terraform" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_org}/${var.github_repo}:*"
+          "token.actions.githubusercontent.com:sub" = [
+            "repo:${var.github_org}@*/${var.github_repo}@*:environment:production",
+            "repo:${var.github_org}@*/${var.github_repo}@*:pull_request"
+          ]
         }
       }
     }]
